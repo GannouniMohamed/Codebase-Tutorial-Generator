@@ -1,25 +1,26 @@
-import { Node, SharedState, Action } from '../types/index.js';
-import chalk from 'chalk';
+import { Node, SharedState } from "../types/index.js";
+import chalk from "chalk";
 
 export class Flow {
   constructor(private startNode: Node) {}
 
   async run(shared: SharedState): Promise<void> {
     try {
-      const input = await this.startNode.prepare(shared);
-      const result = await this.startNode.process(input);
-      const action = await this.startNode.postProcess(shared, input, result);
-      
-      if (action) {
-        const nextNode = this.startNode.connect(this.startNode);
-        if (nextNode) {
-          const nextFlow = new Flow(nextNode);
-          await nextFlow.run(shared);
-        }
+      let currentNode: Node | undefined = this.startNode;
+      let processedNodes = new Set<Node>();
+
+      while (currentNode && !processedNodes.has(currentNode)) {
+        processedNodes.add(currentNode);
+        const input = await currentNode.prepare(shared);
+        const result = await currentNode.process(input);
+        await currentNode.postProcess(shared, input, result);
+
+        // Move to the next node
+        currentNode = currentNode.getNextNode();
       }
     } catch (error) {
-      console.error(chalk.red('Flow execution failed:'), error);
+      console.error(chalk.red("Flow execution failed:"), error);
       throw error;
     }
   }
-} 
+}

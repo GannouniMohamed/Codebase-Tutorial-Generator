@@ -81,7 +81,7 @@ ${chunk.map(([title, content]) => `## ${title}\n\n${content}`).join('\n\n')}
       
       // Wait for the write to complete
       await new Promise((resolve, reject) => {
-        writeStream.on('finish', resolve);
+        writeStream.on('finish', () => resolve(undefined));
         writeStream.on('error', reject);
       });
 

@@ -22,16 +22,8 @@ export abstract class BaseNode implements Node {
     return next;
   }
 
-  protected async runNext(shared: SharedState, action: string = 'default'): Promise<void> {
-    if (this.nextNode) {
-      await this.nextNode.prepare(shared);
-      const input = await this.nextNode.prepare(shared);
-      const result = await this.nextNode.process(input);
-      const nextAction = await this.nextNode.postProcess(shared, input, result);
-      if (nextAction) {
-        await this.runNext(shared, nextAction);
-      }
-    }
+  getNextNode(): Node | undefined {
+    return this.nextNode;
   }
 }
 

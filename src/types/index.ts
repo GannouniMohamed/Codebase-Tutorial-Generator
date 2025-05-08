@@ -77,6 +77,7 @@ export interface Node {
   postProcess(shared: SharedState, input: any, result: any): Promise<string | undefined>;
   handleError(error: Error): Promise<void>;
   connect(next: Node): Node;
+  getNextNode(): Node | undefined;
 }
 
 export interface BatchNode extends Node {
